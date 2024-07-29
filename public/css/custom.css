@@ -1,0 +1,17 @@
+.btn-block {
+    width: 100% !important;
+}
+
+.sb-sidenav-menu {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.nav {
+    flex-grow: 1;
+}
+
+.sb-sidenav-footer {
+    margin-top: auto;
+}
