@@ -29,7 +29,7 @@ Route::prefix('users')->group(function () {
     Route::delete('{id}', [UsersController::class, 'destroy']);
 });
 
-Route::prefix('blog-posts')->group(function () {
+Route::prefix('blogs')->group(function () {
     Route::get('/', [BlogsController::class, 'index']);
     Route::get('{id}', [BlogsController::class, 'show']);
     Route::post('/', [BlogsController::class, 'store']);

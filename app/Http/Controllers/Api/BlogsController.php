@@ -1,135 +1,102 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Blog;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
 
-class BlogsControllerTest extends TestCase
+class BlogsController extends Controller
 {
-    use RefreshDatabase;
-
-    /** @test */
-    public function it_can_fetch_all_blogs()
+    public function index()
     {
-        $blogs = Blog::factory()->count(3)->create();
-
-        $response = $this->getJson('/api/blogs');
-
-        $response->assertStatus(200);
-        $response->assertJson($blogs->toArray());
+        try {
+            $blogs = Blog::all();
+            return response()->json($blogs);
+        } catch (\Exception $e) {
+            Log::error('Error fetching blogs: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to retrieve blogs.'], 500);
+        }
     }
 
-    /** @test */
-    public function it_can_fetch_a_single_blog()
+    public function show($id)
     {
-        $blog = Blog::factory()->create();
-
-        $response = $this->getJson("/api/blogs/{$blog->id}");
-
-        $response->assertStatus(200);
-        $response->assertJson($blog->toArray());
+        try {
+            $blog = Blog::findOrFail($id);
+            return response()->json($blog);
+        } catch (ModelNotFoundException $e) {
+            Log::warning('Blog not found: ' . $id);
+            return response()->json(['error' => 'Blog post not found'], 404);
+        } catch (\Exception $e) {
+            Log::error('Error fetching blog: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to retrieve blog.'], 500);
+        }
     }
 
-    /** @test */
-    public function it_returns_404_if_blog_not_found()
+    public function store(Request $request)
     {
-        $response = $this->getJson('/api/blogs/9999');
+        try {
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'content' => 'required|string',
+                'author' => 'required|string|max:255',
+                'published_at' => 'nullable|date',
+            ]);
 
-        $response->assertStatus(404);
-        $response->assertJson([
-            'error' => 'Blog post not found'
-        ]);
+            $blog = Blog::create($request->all());
+
+            return response()->json($blog, 201);
+        } catch (ValidationException $e) {
+            Log::warning('Validation failed for blog creation: ' . $e->getMessage());
+            return response()->json(['error' => 'Validation failed.'], 422);
+        } catch (\Exception $e) {
+            Log::error('Error creating blog: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to create blog.'], 500);
+        }
     }
 
-    /** @test */
-    public function it_can_create_a_blog()
+    public function update(Request $request, $id)
     {
-        $response = $this->postJson('/api/blogs', [
-            'title' => 'New Blog Title',
-            'content' => 'Content of the new blog.',
-            'author' => 'Author Name',
-            'published_at' => now()->toDateString(),
-        ]);
+        try {
+            $blog = Blog::findOrFail($id);
 
-        $response->assertStatus(201);
-        $response->assertJson([
-            'title' => 'New Blog Title',
-            'content' => 'Content of the new blog.',
-            'author' => 'Author Name',
-        ]);
+            $request->validate([
+                'title' => 'sometimes|required|string|max:255',
+                'content' => 'sometimes|required|string',
+                'author' => 'sometimes|required|string|max:255',
+                'published_at' => 'nullable|date',
+            ]);
 
-        // Verify the blog is created in the database
-        $this->assertDatabaseHas('blogs', [
-            'title' => 'New Blog Title',
-            'content' => 'Content of the new blog.',
-            'author' => 'Author Name',
-        ]);
+            $blog->update($request->only(['title', 'content', 'author', 'published_at']));
+
+            return response()->json($blog);
+        } catch (ModelNotFoundException $e) {
+            Log::warning('Blog not found for update: ' . $id);
+            return response()->json(['error' => 'Blog post not found'], 404);
+        } catch (ValidationException $e) {
+            Log::warning('Validation failed for blog update: ' . $e->getMessage());
+            return response()->json(['error' => 'Validation failed.'], 422);
+        } catch (\Exception $e) {
+            Log::error('Error updating blog: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to update blog.'], 500);
+        }
     }
 
-    /** @test */
-    public function it_can_update_a_blog()
+    public function destroy($id)
     {
-        $blog = Blog::factory()->create();
-
-        $response = $this->putJson("/api/blogs/{$blog->id}", [
-            'title' => 'Updated Blog Title',
-            'content' => 'Updated content of the blog.',
-            'author' => 'Updated Author Name',
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJson([
-            'title' => 'Updated Blog Title',
-            'content' => 'Updated content of the blog.',
-            'author' => 'Updated Author Name',
-        ]);
-
-        // Verify the blog is updated in the database
-        $blog->refresh();
-        $this->assertEquals('Updated Blog Title', $blog->title);
-        $this->assertEquals('Updated content of the blog.', $blog->content);
-        $this->assertEquals('Updated Author Name', $blog->author);
-    }
-
-    /** @test */
-    public function it_returns_404_if_blog_not_found_on_update()
-    {
-        $response = $this->putJson('/api/blogs/9999', [
-            'title' => 'Nonexistent Blog Title',
-        ]);
-
-        $response->assertStatus(404);
-        $response->assertJson([
-            'error' => 'Blog post not found'
-        ]);
-    }
-
-    /** @test */
-    public function it_can_delete_a_blog()
-    {
-        $blog = Blog::factory()->create();
-
-        $response = $this->deleteJson("/api/blogs/{$blog->id}");
-
-        $response->assertStatus(200);
-        $response->assertJson([
-            'message' => 'Blog post deleted successfully'
-        ]);
-
-        // Verify the blog is deleted from the database
-        $this->assertDatabaseMissing('blogs', ['id' => $blog->id]);
-    }
-
-    /** @test */
-    public function it_returns_404_if_blog_not_found_on_delete()
-    {
-        $response = $this->deleteJson('/api/blogs/9999');
-
-        $response->assertStatus(404);
-        $response->assertJson([
-            'error' => 'Blog post not found'
-        ]);
+        try {
+            $blog = Blog::findOrFail($id);
+            $blog->delete();
+            return response()->json(['message' => 'Blog post deleted successfully']);
+        } catch (ModelNotFoundException $e) {
+            Log::warning('Blog not found for deletion: ' . $id);
+            return response()->json(['error' => 'Blog post not found'], 404);
+        } catch (\Exception $e) {
+            Log::error('Error deleting blog: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to delete blog.'], 500);
+        }
     }
 }

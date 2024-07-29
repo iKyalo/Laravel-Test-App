@@ -6,13 +6,18 @@ use App\Models\Blog;
 use App\Models\Photo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\Cache;
 
 class BlogsController extends Controller
 {
     public function index()
     {
-        $blogs = Blog::all();
+        $blogs = Cache::remember('blogs.all', now()->addMinutes(10), function () {
+            return Blog::all();
+        });
+
+        // $blogs = Blog::all();
+
         return view('blogs.index', compact('blogs'));
     }
 
@@ -74,7 +79,8 @@ class BlogsController extends Controller
             'photo' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $fileName = $blogPost->photo;
+        $blog = Blog::findOrFail($request->blog_id);
+        $fileName = $blog->photo;
 
         if ($request->hasFile('photo')) {
             $photo = $request->file('photo');
@@ -83,7 +89,7 @@ class BlogsController extends Controller
             $photo->move(public_path('photos'), $fileName);
         }
 
-        $blogPost->update([
+        $blog->update([
             'title' => $request->title,
             'content' => $request->content,
             'author' => $request->author,
