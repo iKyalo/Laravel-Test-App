@@ -38,7 +38,6 @@ class BlogsController extends Controller
         ]);
 
         $fileName = null;
-        $folder = 'uploads';
     
         if ($request->hasFile('photo')) {
             $photo = $request->file('photo');
@@ -81,6 +80,7 @@ class BlogsController extends Controller
             $photo = $request->file('photo');
             $fileName = time() . '.' . $photo->getClientOriginalExtension();
             $photo->storeAs('photos', $fileName, 'public');
+            $photo->move(public_path('photos'), $fileName);
         }
 
         $blogPost->update([
