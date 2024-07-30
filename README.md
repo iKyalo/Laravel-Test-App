@@ -1,11 +1,13 @@
-#Laravel Project Setup and Instructions
-#Overview
+Laravel Project Setup and Instructions
+
+Overview
 This repository contains a Laravel project with Docker setup for local development. It includes RESTful API endpoints for users and blog posts, a queuing system for background jobs, and a caching mechanism to improve performance.
 
 Prerequisites
-Docker: Ensure Docker and Docker Compose are installed on your system.
-PHP: PHP 8.0 or higher (required for local development without Docker).
-Composer: PHP dependency manager (required for local development without Docker).
+-Docker: Ensure Docker and Docker Compose are installed on your system.
+-PHP: PHP 8.0 or higher (required for local development without Docker).
+-Composer: PHP dependency manager (required for local development without Docker).
+
 Setup
 
 1. Clone the Repository
