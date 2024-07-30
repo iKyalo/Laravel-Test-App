@@ -9,8 +9,8 @@ Composer: PHP dependency manager (required for local development without Docker)
 Setup
 
 1. Clone the Repository
-   git clone https://github.com/your-username/your-laravel-project.git
-   cd your-laravel-project
+   git clone https://github.com/ikyalo/Laravel-Test-App.git
+   cd Laravel-Test-App
 
 2. Docker Setup
    a. Build Docker Containers
@@ -27,15 +27,15 @@ Setup
 
     b. Generate Application Key
     Generate a new application key:
+    docker-compose exec app php artisan key:generate
 
-docker-compose exec app php artisan key:generate
-c. Database Migrations
-Run database migrations to set up the schema:
-docker-compose exec app php artisan migrate
+    c. Database Migrations
+    Run database migrations to set up the schema:
+    docker-compose exec app php artisan migrate
 
-d. Seed the Database (Optional)
-Seed the database with initial data:
-docker-compose exec app php artisan db:seed
+    d. Seed the Database (Optional)
+    Seed the database with initial data:
+    docker-compose exec app php artisan db:seed
 
 4. Access the Application
    Web Application: http://localhost
@@ -50,9 +50,10 @@ GET /api/blog-posts - List all blog posts
 GET /api/blog-posts/{id} - Get blog post by ID
 POST /api/blog-posts - Create a new blog post
 PUT /api/blog-posts/{id} - Update blog post by ID
-DELETE /api/blog-posts/{id} - Delete blog post by ID 5. Queue Workers
+DELETE /api/blog-posts/{id} - Delete blog post by ID
 
-5. To handle background jobs, run the queue worker:
+5. Queue Workers
+   To handle background jobs, run the queue worker:
    docker-compose exec app php artisan queue:work
 
 6. Cache Clearing and Configurations
@@ -61,24 +62,25 @@ DELETE /api/blog-posts/{id} - Delete blog post by ID 5. Queue Workers
    docker-compose exec app php artisan config:cache
    b. Optimize Application
    docker-compose exec app php artisan optimize
-   Development
+
+    Development
 
 7. Accessing the Application Container
    To run commands inside the application container:
+   docker-compose exec app bash
 
-docker-compose exec app bash 2. Running Tests
-To run tests within the Docker container:
+8. Running Tests
+   To run tests within the Docker container:
+   docker-compose exec app php artisan test
 
-docker-compose exec app php artisan test
-
-8. Updating Dependencies
+9. Updating Dependencies
    Update PHP dependencies with Composer:
    docker-compose exec app composer install
 
-9. Frontend Development
-   For frontend assets:
-   docker-compose exec app npm install
-   docker-compose exec app npm run dev
+10. Frontend Development
+    For frontend assets:
+    docker-compose exec app npm install
+    docker-compose exec app npm run dev
 
 Troubleshooting
 Database Connection Issues: Ensure Docker containers are running and check .env for correct database configuration.

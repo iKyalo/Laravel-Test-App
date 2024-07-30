@@ -11,7 +11,7 @@ use Tests\TestCase;
 class BlogsControllerTest extends TestCase
 {
     use RefreshDatabase;
-
+    
     /** @test */
     public function it_displays_a_list_of_blogs()
     {
