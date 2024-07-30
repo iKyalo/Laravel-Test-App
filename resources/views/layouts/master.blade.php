@@ -7,6 +7,7 @@
 
 <body class="sb-nav-fixed">
     @include('includes.navbar')
+    @include('includes.alerts')
 
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">

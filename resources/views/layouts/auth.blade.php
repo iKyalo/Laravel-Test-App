@@ -6,6 +6,8 @@
 </head>
 
 <body class="bg-secondary">
+    @include('includes.alerts')
+
     <div id="layoutAuthentication">
         <div id="layoutAuthentication_content">
             <main>
