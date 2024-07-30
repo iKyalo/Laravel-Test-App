@@ -7,11 +7,11 @@
                 Dashboard
             </a>
             <a class="nav-link" href="/blog">
-                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                <div class="sb-nav-link-icon"><i class="fa-brands fa-hive"></i></div>
                 Blog
             </a>
             <a class="nav-link" href="/users">
-                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                <div class="sb-nav-link-icon"><i class="fa-solid fa-users"></i></div>
                 Users
             </a>
         </div>
