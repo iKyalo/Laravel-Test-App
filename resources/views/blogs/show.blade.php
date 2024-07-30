@@ -6,16 +6,26 @@
             <div class="col-lg-8 mx-auto">
                 <article class="mb-5">
                     <h1 class="mb-3">{{ $blog->title }}</h1>
-                    <p class="text-muted">By <strong>{{ $blog->author }}</strong> on <time
-                            datetime="2024-07-24">{{ $blog->published_at }}</time></p>
+                    @php
+                        $date = $blog->published_at;
+                        $dateTime = new DateTime($date);
+                    @endphp
+                    <p class="text-muted">By <strong>{{ $blog->author }}</strong> on
+                        <time>{{ $dateTime->format('jS F, Y') }}</time>
+                    </p>
                     @if ($blog->photo)
                         <img src="{{ url('photos/' . $blog->photo) }}" alt="Photo" class="img-fluid"
-                            style="max-width: 100%;" />
+                            style="max-width: 100%; max-height: 24rem;" />
                     @else
                         <img class="img-fluid card-img-top" src="https://dummyimage.com/700x350/dee2e6/6c757d.jpg"
                             alt="..." />
                     @endif
-                    <p class="lead">{{ $blog->content }}</p>
+                    <div class="card my-2">
+                        <div class="card-body">
+                            <p class="lead">{{ $blog->content }}</p>
+                        </div>
+                    </div>
+
                 </article>
 
                 <section class="mt-5">

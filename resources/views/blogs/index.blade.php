@@ -19,7 +19,8 @@
                 <div class="col-md-4 mb-4">
                     <div class="card mb-4">
                         @if ($blog->photo)
-                            <img src="{{ url('photos/' . $blog->photo) }}" alt="Photo" style="max-width: 100%;" />
+                            <img src="{{ url('photos/' . $blog->photo) }}" alt="Photo"
+                                style="max-width: 100%; height: 12rem;" />
                         @else
                             <img class="card-img-top" src="https://dummyimage.com/700x350/dee2e6/6c757d.jpg"
                                 alt="..." />
@@ -27,7 +28,11 @@
 
 
                         <div class="card-body">
-                            <div class="small text-muted">{{ $blog->published_at }}</div>
+                            @php
+                                $date = $blog->published_at;
+                                $dateTime = new DateTime($date);
+                            @endphp
+                            <div class="small text-muted">{{ $dateTime->format('jS F, Y') }}</div>
                             <h2 class="card-title h4">{{ $blog->title }}</h2>
                             <p class="card-text">{{ $blog->content }}</p>
                             <a class="btn btn-primary" href="/blogs/{{ $blog->id }}">Read more →</a>

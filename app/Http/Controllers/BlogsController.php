@@ -12,11 +12,11 @@ class BlogsController extends Controller
 {
     public function index()
     {
-        $blogs = Cache::remember('blogs.all', now()->addMinutes(10), function () {
-            return Blog::all();
-        });
+        // $blogs = Cache::remember('blogs.all', now()->addMinutes(10), function () {
+        //     return Blog::all();
+        // });
 
-        // $blogs = Blog::all();
+        $blogs = Blog::all();
 
         return view('blogs.index', compact('blogs'));
     }
